@@ -1,0 +1,105 @@
+/* Styles pour le header */
+
+.main-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background-color: #333;
+    color: white;
+}
+
+.header-left,
+.header-center,
+.header-right {
+    flex: 1;
+}
+
+.header-center {
+    display: flex;
+    justify-content: center;
+}
+
+.header-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.burger-menu {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.burger-menu span {
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    transition: 0.3s;
+}
+
+.burger-nav {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    background-color: #444;
+    padding: 1rem;
+    display: none;
+    z-index: 1000;
+}
+
+.burger-nav.active {
+    display: block;
+}
+
+.burger-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.burger-nav ul li {
+    padding: 0.5rem 0;
+}
+
+.burger-nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+.burger-nav ul li a:hover {
+    color: #ccc;
+}
+
+.search-bar {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 20px;
+    font-size: 1rem;
+}
+
+.profile-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.profile-btn:hover {
+    background-color: #ccc;
+}
+
+.profile-icon {
+    font-size: 1.5rem;
+}
