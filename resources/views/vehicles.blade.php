@@ -2,6 +2,82 @@
 
 @section('title', 'Véhicules')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/vehicles.css') }}">
+@endpush
+
 @section('content')
-    <h1>Liste des véhicules</h1>
+    <div class="vehicles-page">
+        <div class="page-header">
+            <h1>Notre flotte de véhicules</h1>
+            <p>Découvrez tous nos véhicules disponibles à la location</p>
+        </div>
+
+        {{-- Section Voitures --}}
+        @if($vehiclesByType['car']->isNotEmpty())
+            <div class="vehicle-section">
+                <h2 class="section-title">
+                    <span class="icon">🚗</span> Voitures
+                    <span class="count">{{ $vehiclesByType['car']->count() }} véhicule(s)</span>
+                </h2>
+                <div class="vehicles-grid">
+                    @foreach($vehiclesByType['car'] as $vehicle)
+                        @include('partials.vehicle-card', ['vehicle' => $vehicle])
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Section Motos --}}
+        @if($vehiclesByType['motorcycle']->isNotEmpty())
+            <div class="vehicle-section">
+                <h2 class="section-title">
+                    <span class="icon">🏍️</span> Motos
+                    <span class="count">{{ $vehiclesByType['motorcycle']->count() }} véhicule(s)</span>
+                </h2>
+                <div class="vehicles-grid">
+                    @foreach($vehiclesByType['motorcycle'] as $vehicle)
+                        @include('partials.vehicle-card', ['vehicle' => $vehicle])
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Section Vans --}}
+        @if($vehiclesByType['van']->isNotEmpty())
+            <div class="vehicle-section">
+                <h2 class="section-title">
+                    <span class="icon">🚐</span> Vans
+                    <span class="count">{{ $vehiclesByType['van']->count() }} véhicule(s)</span>
+                </h2>
+                <div class="vehicles-grid">
+                    @foreach($vehiclesByType['van'] as $vehicle)
+                        @include('partials.vehicle-card', ['vehicle' => $vehicle])
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Section Sportives --}}
+        @if($vehiclesByType['sport']->isNotEmpty())
+            <div class="vehicle-section">
+                <h2 class="section-title">
+                    <span class="icon">🏎️</span> Sportives
+                    <span class="count">{{ $vehiclesByType['sport']->count() }} véhicule(s)</span>
+                </h2>
+                <div class="vehicles-grid">
+                    @foreach($vehiclesByType['sport'] as $vehicle)
+                        @include('partials.vehicle-card', ['vehicle' => $vehicle])
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        @if($vehiclesByType['car']->isEmpty() && $vehiclesByType['motorcycle']->isEmpty() && 
+            $vehiclesByType['van']->isEmpty() && $vehiclesByType['sport']->isEmpty())
+            <div class="no-vehicles">
+                <p>Aucun véhicule disponible pour le moment.</p>
+            </div>
+        @endif
+    </div>
 @endsection

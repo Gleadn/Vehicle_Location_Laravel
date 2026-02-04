@@ -1,15 +1,30 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Models\Vehicle;
+use App\Services\VehicleService;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', function (VehicleService $vehicleService) {
+    $vehicles = $vehicleService->getCheapestVehicles(8);
+    
+    return view('welcome', compact('vehicles'));
 })->name('home');
 
-Route::get('/vehicles', function () {
-    return view('vehicles');
+Route::get('/vehicles', function (VehicleService $vehicleService) {
+    $vehiclesByType = [
+        'car' => Vehicle::where('type', 'car')->get(),
+        'motorcycle' => Vehicle::where('type', 'motorcycle')->get(),
+        'van' => Vehicle::where('type', 'van')->get(),
+        'sport' => Vehicle::where('type', 'sport')->get(),
+    ];
+    
+    return view('vehicles', compact('vehiclesByType'));
 })->name('vehicles');
+
+Route::get('/locationDemand', function () {
+    return view('location-demand');
+})->name('locationDemand');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

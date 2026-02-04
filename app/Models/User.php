@@ -46,4 +46,36 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get all location demands for this user.
+     */
+    public function locationDemands()
+    {
+        return $this->hasMany(LocationDemand::class);
+    }
+
+    /**
+     * Get all locations (confirmed rentals) for this user.
+     */
+    public function locations()
+    {
+        return $this->hasMany(Location::class);
+    }
+
+    /**
+     * Get active locations for this user.
+     */
+    public function activeLocations()
+    {
+        return $this->hasMany(Location::class)->where('status', 'active');
+    }
+
+    /**
+     * Get pending location demands for this user.
+     */
+    public function pendingDemands()
+    {
+        return $this->hasMany(LocationDemand::class)->where('status', 'pending');
+    }
 }

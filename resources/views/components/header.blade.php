@@ -11,6 +11,7 @@
             <ul>
                 <li><a href="/">Accueil</a></li>
                 <li><a href="/vehicles">Véhicules</a></li>
+                <li><a href="/locationDemand">Réservation</a></li>
             </ul>
         </nav>
     </div>

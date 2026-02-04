@@ -1,0 +1,98 @@
+/* Styles spécifiques pour la page vehicles */
+
+.vehicles-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Page Header */
+.page-header {
+    text-align: center;
+    padding: 40px 20px 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    margin-bottom: 50px;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.page-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* Vehicle Sections */
+.vehicle-section {
+    margin-bottom: 60px;
+}
+
+.section-title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 15px;
+}
+
+.section-title .icon {
+    font-size: 2.5rem;
+}
+
+.section-title .count {
+    font-size: 1rem;
+    font-weight: normal;
+    color: #666;
+    margin-left: auto;
+}
+
+/* Vehicle Status Badges */
+.vehicle-status {
+    margin-bottom: 15px;
+}
+
+.badge-available {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background-color: #10b981;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.badge-maintenance {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background-color: #f59e0b;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.badge-unavailable {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background-color: #ef4444;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+/* Empty state */
+.vehicles-page .no-vehicles {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 1.1rem;
+    grid-column: 1 / -1;
+}
