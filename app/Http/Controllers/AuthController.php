@@ -25,9 +25,10 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        $credentials = $request->validated();
+        $credentials = $request->only('email', 'password');
+        $remember = $request->boolean('remember'); // Récupère la checkbox "remember me"
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
             return redirect()->intended('/')->with('success', 'Connexion réussie !');

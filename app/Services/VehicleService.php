@@ -80,6 +80,131 @@ class VehicleService
     }
 
     /**
+     * Get best matching vehicles based on weighted criteria.
+     */
+    public function getBestMatches(array $criteria, int $limit = 3, array $excludeIds = []): Collection
+    {
+        $query = Vehicle::available();
+
+        if (!empty($excludeIds)) {
+            $query->whereNotIn('id', $excludeIds);
+        }
+
+        $types = $criteria['types'] ?? null;
+        $category = $criteria['vehicle_category'] ?? null;
+
+        if (!$types && $category) {
+            $types = $category === 'motorcycle'
+                ? ['motorcycle']
+                : ['car', 'van', 'sport'];
+        }
+
+        if (!empty($types)) {
+            $query->whereIn('type', $types);
+        }
+
+        if (isset($criteria['max_budget'])) {
+            $query->where('daily_rate', '<=', $criteria['max_budget']);
+        }
+
+        $vehicles = $query->get();
+
+        if ($vehicles->isEmpty()) {
+            return new Collection();
+        }
+
+        $weights = [
+            'type' => 3,
+            'seats' => 2,
+            'fuel' => 2,
+            'price' => 1,
+        ];
+
+        if (!empty($criteria['weights']) && is_array($criteria['weights'])) {
+            $weights = array_merge($weights, $criteria['weights']);
+        }
+
+        if (!empty($criteria['priority_criteria']) && is_array($criteria['priority_criteria'])) {
+            foreach ($criteria['priority_criteria'] as $priority) {
+                if (isset($weights[$priority])) {
+                    $weights[$priority] += 1;
+                }
+            }
+        }
+
+        $minPrice = $vehicles->min('daily_rate');
+        $maxPrice = $vehicles->max('daily_rate');
+
+        $scored = $vehicles->map(function (Vehicle $vehicle) use ($criteria, $weights, $minPrice, $maxPrice) {
+            $score = $this->calculateMatchScore($vehicle, $criteria, $weights, $minPrice, $maxPrice);
+            return [
+                'vehicle' => $vehicle,
+                'score' => $score,
+            ];
+        });
+
+        $sorted = $scored->sort(function ($a, $b) {
+            if ($a['score'] === $b['score']) {
+                return $a['vehicle']->daily_rate <=> $b['vehicle']->daily_rate;
+            }
+
+            return $b['score'] <=> $a['score'];
+        })->values();
+
+        $topVehicles = $sorted->take($limit)->pluck('vehicle')->all();
+        
+        return new Collection($topVehicles);
+    }
+
+    /**
+     * Calculate the match score for a vehicle.
+     */
+    protected function calculateMatchScore(
+        Vehicle $vehicle,
+        array $criteria,
+        array $weights,
+        float $minPrice,
+        float $maxPrice
+    ): float {
+        $score = 0.0;
+
+        if (!empty($criteria['types'])) {
+            if (in_array($vehicle->type, $criteria['types'], true)) {
+                $score += $weights['type'];
+            }
+        }
+
+        if (isset($criteria['seats_required'])) {
+            $delta = abs($vehicle->seats - (int) $criteria['seats_required']);
+            $maxDelta = 10;
+            $seatScore = $weights['seats'] * (1 - min($delta / $maxDelta, 1));
+            $score += $seatScore;
+        }
+
+        if (isset($criteria['fuel_type'])) {
+            if ($vehicle->fuel_type === $criteria['fuel_type']) {
+                $score += $weights['fuel'];
+            }
+        }
+
+        if (isset($criteria['trip_type']) && $criteria['trip_type'] === 'road_trip') {
+            if ($vehicle->fuel_type === 'electric') {
+                $score -= $weights['fuel'] * 0.75;
+            }
+        }
+
+        if ($maxPrice > $minPrice) {
+            $normalizedPrice = 1 - (($vehicle->daily_rate - $minPrice) / ($maxPrice - $minPrice));
+        } else {
+            $normalizedPrice = 1;
+        }
+
+        $score += $weights['price'] * $normalizedPrice;
+
+        return $score;
+    }
+
+    /**
      * Check if vehicle is available for a date range.
      */
     public function isAvailableForDates(Vehicle $vehicle, string $startDate, string $endDate): bool

@@ -51,15 +51,16 @@
             <span class="period">/ jour</span>
         </div>
         
-        <button class="btn-reserve" onclick="openReservationModal(
-            {{ $vehicle->id }},
-            '{{ $vehicle->brand }} {{ $vehicle->model }}',
-            '{{ $vehicle->registration_number }}',
-            '{{ number_format($vehicle->daily_rate, 2) }}',
-            {{ $vehicle->seats }},
-            '{{ $vehicle->fuel_type }}',
-            {{ $vehicle->available ? 'true' : 'false' }},
-            '{{ $vehicle->status }}'
-        )">Réserver</button>
+        <button
+            class="btn-reserve"
+            data-vehicle-id="{{ $vehicle->id }}"
+            data-vehicle-name="{{ $vehicle->brand }} {{ $vehicle->model }}"
+            data-vehicle-registration="{{ $vehicle->registration_number }}"
+            data-daily-rate="{{ number_format($vehicle->daily_rate, 2) }}"
+            data-seats="{{ $vehicle->seats }}"
+            data-fuel-type="{{ $vehicle->fuel_type }}"
+            data-available="{{ $vehicle->available ? 'true' : 'false' }}"
+            data-status="{{ $vehicle->status }}"
+        >Réserver</button>
     </div>
 </div>

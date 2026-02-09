@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LocationDemandController;
 use App\Models\Vehicle;
 use App\Services\VehicleService;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,10 @@ Route::get('/vehicles', function (VehicleService $vehicleService) {
 Route::get('/locationDemand', function () {
     return view('location-demand');
 })->name('locationDemand');
+
+// Routes pour les demandes de location
+Route::post('/location-demands', [LocationDemandController::class, 'store'])->name('location-demands.store');
+Route::post('/location-proposals/{proposal}/accept', [LocationDemandController::class, 'acceptProposal'])->name('location-proposals.accept');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

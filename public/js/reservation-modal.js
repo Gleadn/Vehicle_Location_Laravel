@@ -86,15 +86,7 @@ function updateCheckboxStates() {
                 checkbox.parentElement.style.cursor = 'not-allowed';
             }
         });
-    } else {limitation à 2 critères
-        const criteriaCheckboxes = modal.querySelectorAll('input[name="criteria[]"]');
-        criteriaCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                updateCheckboxStates();
-            });
-        });
-        
-        // Gestion de la 
+    } else {
         // Réactiver toutes les cases
         checkboxes.forEach(checkbox => {
             checkbox.disabled = false;
@@ -123,6 +115,36 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.addEventListener('click', function() {
             closeReservationModal();
         });
+
+        // Gestion de la limitation a 2 criteres
+        const criteriaCheckboxes = modal.querySelectorAll('input[name="criteria[]"]');
+        criteriaCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateCheckboxStates();
+            });
+        });
+        updateCheckboxStates();
+
+        // Ouvrir le modal depuis les boutons (sauf sur la page d'accueil qui redirige)
+        const shouldRedirect = document.body.hasAttribute('data-redirect-to-vehicles');
+        
+        if (!shouldRedirect) {
+            const reserveButtons = document.querySelectorAll('.btn-reserve[data-vehicle-id]');
+            reserveButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    openReservationModal(
+                        this.dataset.vehicleId,
+                        this.dataset.vehicleName,
+                        this.dataset.vehicleRegistration,
+                        this.dataset.dailyRate,
+                        parseInt(this.dataset.seats, 10),
+                        this.dataset.fuelType,
+                        this.dataset.available === 'true',
+                        this.dataset.status
+                    );
+                });
+            });
+        }
         
         // Gestion de la soumission du formulaire
         const form = document.getElementById('reservationForm');

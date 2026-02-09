@@ -88,7 +88,7 @@ class LocationDemandService
     protected function createSpecificProposals(LocationDemand $demand): Collection
     {
         $requestedVehicle = $demand->requestedVehicle;
-        $proposals = collect();
+        $proposals = new Collection();
 
         // Proposition 1 : Le véhicule demandé
         $price = $this->vehicleService->calculateTotalPrice(
@@ -105,7 +105,12 @@ class LocationDemandService
         ]));
 
         // Propositions 2-3 : Véhicules similaires (même type)
-        $similarVehicles = $this->findSimilarVehicles($requestedVehicle, 2);
+        $similarVehicles = $this->vehicleService->getBestMatches([
+            'types' => [$requestedVehicle->type],
+            'seats_required' => $requestedVehicle->seats,
+            'fuel_type' => $requestedVehicle->fuel_type,
+            'priority_criteria' => ['seats', 'fuel'],
+        ], 2, [$requestedVehicle->id]);
 
         foreach ($similarVehicles as $index => $vehicle) {
             $price = $this->vehicleService->calculateTotalPrice(
@@ -135,11 +140,11 @@ class LocationDemandService
     protected function createGenericProposals(LocationDemand $demand): Collection
     {
         $criteria = [
-            'type' => $demand->vehicle_type,
+            'types' => [$demand->vehicle_type],
         ];
 
         if ($demand->seats_required) {
-            $criteria['seats'] = $demand->seats_required;
+            $criteria['seats_required'] = $demand->seats_required;
         }
 
         if ($demand->max_budget) {
@@ -147,12 +152,9 @@ class LocationDemandService
         }
 
         // Rechercher les véhicules correspondants
-        $vehicles = $this->vehicleService->searchVehicles($criteria);
+        $topVehicles = $this->vehicleService->getBestMatches($criteria, 3);
 
-        // Prendre les 3 premiers (déjà triés par prix)
-        $topVehicles = $vehicles->take(3);
-
-        $proposals = collect();
+        $proposals = new Collection();
 
         foreach ($topVehicles as $index => $vehicle) {
             $price = $this->vehicleService->calculateTotalPrice(
@@ -180,12 +182,11 @@ class LocationDemandService
      */
     protected function findSimilarVehicles(Vehicle $vehicle, int $limit = 2): Collection
     {
-        return Vehicle::available()
-            ->where('type', $vehicle->type)
-            ->where('id', '!=', $vehicle->id)
-            ->orderBy('daily_rate', 'asc')
-            ->limit($limit)
-            ->get();
+        return $this->vehicleService->getBestMatches([
+            'types' => [$vehicle->type],
+            'seats_required' => $vehicle->seats,
+            'fuel_type' => $vehicle->fuel_type,
+        ], $limit, [$vehicle->id]);
     }
 
     /**

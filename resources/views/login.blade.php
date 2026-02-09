@@ -48,6 +48,18 @@
                     >
                 </div>
 
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input 
+                            type="checkbox" 
+                            id="remember" 
+                            name="remember"
+                            {{ old('remember') ? 'checked' : '' }}
+                        >
+                        <span>Se souvenir de moi</span>
+                    </label>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Se connecter</button>
             </form>
 

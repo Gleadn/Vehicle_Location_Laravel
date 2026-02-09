@@ -6,6 +6,43 @@
     <link rel="stylesheet" href="{{ asset('css/vehicles.css') }}">
 @endpush
 
+@push('scripts')
+    <script>
+        // Ouvrir automatiquement le modal si un véhicule est spécifié dans l'URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const vehicleId = urlParams.get('vehicle');
+            
+            if (vehicleId) {
+                // Trouver le bouton correspondant au véhicule
+                const targetButton = document.querySelector(`.btn-reserve[data-vehicle-id="${vehicleId}"]`);
+                
+                if (targetButton) {
+                    // Ouvrir le modal avec les données du véhicule
+                    setTimeout(() => {
+                        openReservationModal(
+                            targetButton.dataset.vehicleId,
+                            targetButton.dataset.vehicleName,
+                            targetButton.dataset.vehicleRegistration,
+                            targetButton.dataset.dailyRate,
+                            parseInt(targetButton.dataset.seats, 10),
+                            targetButton.dataset.fuelType,
+                            targetButton.dataset.available === 'true',
+                            targetButton.dataset.status
+                        );
+                        
+                        // Scroller vers le véhicule
+                        targetButton.closest('.vehicle-card').scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    }, 300);
+                }
+            }
+        });
+    </script>
+@endpush
+
 @section('content')
     <div class="vehicles-page">
         <div class="page-header">
