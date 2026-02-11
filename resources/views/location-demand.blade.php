@@ -13,6 +13,14 @@
             <p>Choisissez votre véhicule et faites une demande de location</p>
         </div>
 
+        @guest
+            <div class="alert alert-info" style="max-width: 800px; margin: 0 auto 2rem; padding: 1rem; background: #cfe2ff; border: 1px solid #9ec5fe; border-radius: 8px; color: #084298;">
+                <strong>ℹ️ Information :</strong> Vous devez être connecté pour effectuer une réservation. 
+                <a href="{{ route('login') }}" style="color: #084298; font-weight: 600; text-decoration: underline;">Se connecter</a> ou 
+                <a href="{{ route('register') }}" style="color: #084298; font-weight: 600; text-decoration: underline;">créer un compte</a>.
+            </div>
+        @endguest
+
         <div class="location-demand-container">
             <!-- Formulaire de demande -->
             <form id="locationDemandForm" class="demand-form">

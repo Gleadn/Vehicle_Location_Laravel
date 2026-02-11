@@ -1,5 +1,3 @@
-// Formulaire de demande de reservation (modulaire)
-
 document.addEventListener('DOMContentLoaded', function() {
     const categoryRadios = document.querySelectorAll('input[name="vehicle_category"]');
     const seatsSection = document.getElementById('section-seats');
@@ -81,17 +79,13 @@ document.addEventListener('DOMContentLoaded', function() {
     handleCategoryChange();
     handleSeatsChange();
 
-    // Gestion de la soumission du formulaire
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
-        // Ajouter le token CSRF
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        
-        // Afficher le chargement
         form.classList.add('hidden');
         loadingMessage.classList.remove('hidden');
 
@@ -117,9 +111,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Erreur:', error);
-            alert('Une erreur est survenue. Veuillez réessayer.');
-            loadingMessage.classList.add('hidden');
-            form.classList.remove('hidden');
+            
+            loadingMessage.innerHTML = `
+                <div class="error-message">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <p style="color: #dc3545; font-weight: 600; margin-top: 1rem;">Une erreur est survenue</p>
+                    <p style="color: #666;">Veuillez vous connecter ou réessayer.</p>
+                    <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">Réessayer</button>
+                </div>
+            `;
         }
     });
 
@@ -213,21 +217,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (result.success) {
-                alert('Réservation confirmée! Vous allez être redirigé vers votre profil.');
-                // Rediriger vers le profil ou la page de confirmation
-                window.location.href = '/profile';
+                window.location.href = '/profile?reservation=success';
             } else {
                 throw new Error(result.message || 'Erreur lors de la réservation');
             }
         } catch (error) {
             console.error('Erreur:', error);
-            alert('Une erreur est survenue lors de la réservation. Veuillez réessayer.');
-        }
+            
+            // Afficher un message d'erreur dans la page
+            errorDiv.className = 'alert alert-error';
+            errorDiv.style.margin = '1rem 0';
+            errorDiv.innerHTML = `
+                <p style="margin: 0; font-weight: 600;">❌ Erreur lors de la réservation</p>
+                <p style="margin: 0.5rem 0 0 0;">${error.message}</p>
+            `;
+            proposalsGrid.insertAdjacentElement('beforebegin', errorDiv);
+            
+            // Supprimer le message après 5 secondes
+            
     }
 
     // Retour au formulaire
     backToFormBtn.addEventListener('click', function() {
-        proposalsSection.classList.add('hidden');
         form.classList.remove('hidden');
         form.reset();
         handleCategoryChange();

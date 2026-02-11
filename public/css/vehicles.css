@@ -1,12 +1,9 @@
-/* Styles spécifiques pour la page vehicles */
-
 .vehicles-page {
     max-width: 1400px;
     margin: 0 auto;
     padding: 40px 20px;
 }
 
-/* Page Header */
 .page-header {
     text-align: center;
     padding: 40px 20px 60px;
@@ -26,7 +23,6 @@
     opacity: 0.9;
 }
 
-/* Vehicle Sections */
 .vehicle-section {
     margin-bottom: 60px;
 }
@@ -53,7 +49,6 @@
     margin-left: auto;
 }
 
-/* Vehicle Status Badges */
 .vehicle-status {
     margin-bottom: 15px;
 }
@@ -88,7 +83,6 @@
     font-weight: bold;
 }
 
-/* Empty state */
 .vehicles-page .no-vehicles {
     text-align: center;
     padding: 60px 20px;

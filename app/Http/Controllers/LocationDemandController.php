@@ -34,11 +34,9 @@ class LocationDemandController extends Controller
             $vehicleType = 'sport';
         }
 
-        // Créer la demande de location
-        $userId = Auth::id() ?? 1; // Utiliser l'utilisateur connecté ou ID par défaut pour test
-        
+        // Créer la demande de location (utilisateur doit être connecté)
         $demand = $this->locationDemandService->createGenericDemand(
-            userId: $userId,
+            userId: Auth::id(),
             vehicleType: $vehicleType,
             startDate: now()->addDay()->format('Y-m-d'), // Date de début par défaut (demain)
             endDate: now()->addDays(3)->format('Y-m-d'), // Date de fin par défaut (dans 3 jours)
@@ -83,7 +81,7 @@ class LocationDemandController extends Controller
         $proposal = \App\Models\LocationProposal::findOrFail($proposalId);
 
         // Vérifier que la demande appartient à l'utilisateur
-        if (Auth::check() && $proposal->locationDemand->user_id !== Auth::id()) {
+        if ($proposal->locationDemand->user_id !== Auth::id()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Non autorisé',
@@ -130,5 +128,49 @@ class LocationDemandController extends Controller
         }
 
         return implode("\n", $notes);
+    }
+
+    /**
+     * Create a specific vehicle reservation.
+     */
+    public function reserveVehicle(Request $request)
+    {
+        $validated = $request->validate([
+            'vehicle_id' => 'required|integer|exists:vehicles,id',
+            'criteria' => 'nullable|array',
+            'criteria.*' => 'string|in:price,seats,fuel',
+        ]);
+
+        $vehicleId = $validated['vehicle_id'];
+        $criteria = $validated['criteria'] ?? [];
+
+        // Créer une demande spécifique pour ce véhicule
+        $demand = $this->locationDemandService->createSpecificDemand(
+            userId: Auth::id(),
+            vehicleId: $vehicleId,
+            startDate: now()->addDay()->format('Y-m-d'),
+            endDate: now()->addDays(3)->format('Y-m-d'),
+            notes: 'Critères sélectionnés: ' . (count($criteria) > 0 ? implode(', ', $criteria) : 'Aucun')
+        );
+
+        // Traiter la demande et obtenir les propositions
+        $proposals = $this->locationDemandService->processDemand($demand);
+
+        // Accepter automatiquement la première proposition (le véhicule demandé)
+        $firstProposal = $proposals->first();
+        if ($firstProposal) {
+            $location = $this->locationDemandService->acceptProposal($firstProposal);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Réservation confirmée!',
+                'location_id' => $location->id,
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Impossible de créer la réservation',
+        ], 400);
     }
 }

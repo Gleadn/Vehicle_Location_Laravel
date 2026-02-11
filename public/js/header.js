@@ -1,5 +1,3 @@
-// Script pour le menu burger du header
-
 document.addEventListener('DOMContentLoaded', function() {
     const burgerMenu = document.getElementById('burgerMenu');
     const burgerNav = document.getElementById('burgerNav');
@@ -9,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
             burgerNav.classList.toggle('active');
         });
         
-        // Fermer le menu si on clique ailleurs
         document.addEventListener('click', function(event) {
             if (!burgerMenu.contains(event.target) && !burgerNav.contains(event.target)) {
                 burgerNav.classList.remove('active');

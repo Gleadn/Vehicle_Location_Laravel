@@ -16,13 +16,15 @@
         </nav>
     </div>
 
-    <div class="header-center">
-        <input type="search" class="search-bar" placeholder="Rechercher un véhicule...">
-    </div>
-
     <div class="header-right">
+        @auth
+            @if(Auth::user()->isAdmin())
+                <a href="{{ route('admin.index') }}" class="admin-btn" title="Panel Admin">
+                    🛡️
+                </a>
+            @endif
+        @endauth
         <a href="/profile" class="profile-btn">
-            <!-- <span class="profile-icon">👤</span> -->
         </a>
     </div>
 </header>
